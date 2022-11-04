@@ -4,12 +4,15 @@
 **        -Remember login
 */
 
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:first_app/super_page.dart';
-import 'package:flutter/material.dart';
+import 'dart:developer';
 
-String welc = "Ciao!";
-String subWelc = "Siamo contenti di vederti qui!";
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:first_app/signup_page.dart';
+import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+
+String welc = "Sup!";
+String subWelc = "We are happy to see you here!";
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -22,12 +25,26 @@ class _LoginPageState extends State<LoginPage> {
   // text cotnrollers
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  bool _pass_obscured = true;
+  void passObscureController() {
+    _pass_obscured = !_pass_obscured;
+    setState(() {});
+  }
 
-  Future signiIn() async {
-    await FirebaseAuth.instance.signInWithEmailAndPassword(
-      email: _emailController.text.trim(),
-      password: _passwordController.text.trim(),
-    );
+  Future signIn() async {
+    try {
+      await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: _emailController.text.trim(),
+        password: _passwordController.text.trim(),
+      );
+    } on FirebaseAuthException catch (e) {
+      Fluttertoast.showToast(
+        toastLength: Toast.LENGTH_LONG,
+        msg: 'Somethign went wrong, try again!',
+        backgroundColor: Colors.grey,
+        textColor: Colors.black,
+      );
+    }
   }
 
   @override
@@ -50,8 +67,8 @@ class _LoginPageState extends State<LoginPage> {
       child: Scaffold(
           backgroundColor: Colors.transparent,
           body: Center(
-            child: SafeArea(
-              child: SingleChildScrollView(
+            child: SingleChildScrollView(
+              child: SafeArea(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -112,12 +129,58 @@ class _LoginPageState extends State<LoginPage> {
                           padding: const EdgeInsets.only(left: 20),
                           child: TextField(
                             controller: _passwordController,
-                            obscureText: true,
-                            decoration: const InputDecoration(
+                            obscureText: _pass_obscured,
+                            decoration: InputDecoration(
                               hintText: 'Password',
                               border: InputBorder.none,
+                              suffixIcon: IconButton(
+                                onPressed: () {
+                                  if (_passwordController.text.isEmpty) {
+                                    Fluttertoast.showToast(
+                                      msg:
+                                          'Cazzo clicchi che non hai scritto nulla, coglione!',
+                                    );
+                                  }
+                                  passObscureController();
+                                },
+                                icon: Icon(_pass_obscured == true
+                                    ? Icons.remove_red_eye
+                                    : Icons.password),
+                              ),
                             ),
                           ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    //Forgot password
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 25),
+                      child: GestureDetector(
+                        onTap: () {
+                          Fluttertoast.showToast(
+                            msg:
+                                'Eh ma sarai coglione! Dai che tanto sarà "pass123" o qualche cagata del genere!',
+                          );
+                          /* Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const SignupPage(),
+                            ),
+                          ); */
+                        },
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            Text(
+                              'Forgot password?',
+                              textAlign: TextAlign.left,
+                              style: TextStyle(
+                                color: Colors.blue,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                     ),
@@ -128,16 +191,10 @@ class _LoginPageState extends State<LoginPage> {
                         padding: const EdgeInsets.all(20),
                         backgroundColor:
                             const Color.fromARGB(255, 243, 206, 95),
-                        //borderRadius: BorderRadius.circular(15),
                       ),
                       onPressed: () {
                         //Qui ci andrebbe il sign in
-                        signiIn();
-                        /* Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const SuperPage()),
-                        ); */
+                        signIn();
                       },
                       child: const Text(
                         'Sign In',
@@ -148,39 +205,32 @@ class _LoginPageState extends State<LoginPage> {
                         ),
                       ),
                     ),
-                    /* Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 25),
-                      child: Container(
-                        padding: const EdgeInsets.all(20),
-                        decoration: BoxDecoration(
-                          color: const Color.fromARGB(255, 243, 206, 95),
-                          borderRadius: BorderRadius.circular(15),
-                        ),
-                        child: const Text(
-                          'Sign In',
-                          style: TextStyle(
-                            color: Color.fromARGB(255, 66, 56, 9),
-                            fontWeight: FontWeight.bold,
-                            fontSize: 20,
-                          ),
-                        ),
-                      ),
-                    ), */
+
                     const SizedBox(height: 30),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
-                      children: const [
+                      children: [
                         Text(
                           'Not a member yet?',
                           style: TextStyle(
                             color: Color.fromARGB(255, 207, 206, 206),
                           ),
                         ),
-                        Text(
-                          '   Log in now!',
-                          style: TextStyle(
-                            color: Colors.blue,
-                            fontWeight: FontWeight.bold,
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const SignupPage(),
+                              ),
+                            );
+                          },
+                          child: Text(
+                            '   Log in now!',
+                            style: TextStyle(
+                              color: Colors.blue,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         ),
                       ],

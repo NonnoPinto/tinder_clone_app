@@ -8,6 +8,7 @@ import 'package:first_app/user_pages/user_main.dart';
 import 'package:first_app/user_pages/user_settings.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:google_nav_bar/google_nav_bar.dart';
 import 'login_page.dart';
 
 class SuperPage extends StatefulWidget {
@@ -19,6 +20,7 @@ class SuperPage extends StatefulWidget {
 
 class _SuperPageState extends State<SuperPage> {
   int _selectedIndex = 1;
+  //icon basic color
   final Color _iconColor = const Color.fromARGB(255, 236, 214, 145);
   //Pages list (the order correspond to index order!)
   final List<Widget> _pages = const [
@@ -29,46 +31,46 @@ class _SuperPageState extends State<SuperPage> {
     RentSettings(),
     SearchSettings()
   ];
+  //Function for page landing. Ill need to choose based on user type
   void _onItemTapped(int index) {
-    //Function for page landing. Ill need to choose based on user type
     setState(() {
       _selectedIndex = index;
     });
   }
 
-  //final Color _iconColor = const Color.fromARGB(255, 236, 214, 145);
+  //shows logout notification
+  void showLogoutNotification() {
+    Fluttertoast.showToast(
+      toastLength: Toast.LENGTH_LONG,
+      msg: 'Logout',
+      backgroundColor: Colors.grey,
+      textColor: Colors.black,
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       //Logout botton
       floatingActionButtonLocation: FloatingActionButtonLocation.endTop,
       floatingActionButton: FloatingActionButton(
+        //logout
         onPressed: () {
-          Fluttertoast.showToast(
-            toastLength: Toast.LENGTH_LONG,
-            msg: 'Logout',
-            backgroundColor: Colors.grey,
-            textColor: Colors.black,
-          );
-          //rn it brings back to login page
-          //TO DO: logut action
+          showLogoutNotification();
           FirebaseAuth.instance.signOut();
-          /* Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => const LoginPage(),
-            ),
-          ); */
         },
         backgroundColor: _iconColor,
+        //Icon
         child: const Icon(
           Icons.logout_outlined,
           color: Colors.black,
         ),
       ),
-      //Landing page
-      body: _pages.elementAt(_selectedIndex),
+      //still need to put a controller on user type
+      body:
+          //page
+          _pages.elementAt(_selectedIndex),
       //Navigation Bar
       bottomNavigationBar: CurvedNavigationBar(
         backgroundColor: Colors.transparent,

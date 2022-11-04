@@ -1,6 +1,7 @@
 /* App Settings */
 
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class UserSettings extends StatefulWidget {
   const UserSettings({Key? key}) : super(key: key);
@@ -10,11 +11,15 @@ class UserSettings extends StatefulWidget {
 }
 
 class _UserSettingsState extends State<UserSettings> {
+  final _auth = FirebaseAuth.instance.currentUser!;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
-        child: Text('user_settings'),
+        child: Center(
+          child: Text('Logged as ' + _auth.email!),
+        ),
       ),
     );
   }
